@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+@Autonomous(name="redPark", group="red")
 class parkingAuto extends LinearOpMode  {
 
     // Declare OpMode members for each of the 4 motors.

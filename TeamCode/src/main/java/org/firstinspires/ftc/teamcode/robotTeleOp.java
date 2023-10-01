@@ -19,7 +19,6 @@ public class robotTeleOp extends LinearOpMode {
     private DcMotor back_right_dcMotor = null;
 
 
-
     //create servo variables
 
     //in claw
@@ -53,6 +52,7 @@ public class robotTeleOp extends LinearOpMode {
     double outClawPos=0.0; // change this value to initial value
     final double outClawOpen=0.0; // change this value
     final double outClawClosed=0.0; // change this value
+    final double outClawPixel=0.0;//change this value
 
     Servo outDistanceAdjuster;
     double outDistanceAdjusterPos=0.0; // change this value to initial value
@@ -63,6 +63,8 @@ public class robotTeleOp extends LinearOpMode {
     double outWristPos=0.0; // change this value to initial value
     final double outWristTransfer=0.0; // change this value
     final double outWristPlace=0.0; // change this value
+
+    boolean placingPixel=false;
 
 
     Servo transfer;
@@ -78,6 +80,7 @@ public class robotTeleOp extends LinearOpMode {
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Status", "Initialized");
         telemetry.update();
+        moveServos();
 
         waitForStart();
         runtime.reset();
@@ -111,8 +114,6 @@ public class robotTeleOp extends LinearOpMode {
                 rightBackPower /= max;
             }
 
-
-
             // Send calculated power to wheels
             front_left_dcMotor.setPower(leftFrontPower);
             front_right_dcMotor.setPower(rightFrontPower);
@@ -124,15 +125,10 @@ public class robotTeleOp extends LinearOpMode {
 
             intakeAndTransferToTransfer();
 
-
-
-
             moveServos();
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
-            telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
             telemetry.update();
         }
     }
@@ -162,8 +158,12 @@ public class robotTeleOp extends LinearOpMode {
             inClawHeightAdjusterPos=inHeightNormal;
             inClawWristPos=inWristNormal;
         }
+        else if(dpadPressCounter>4){
+            dpadPressCounter%=4;
+            dpadPressCounter++;
+        }
 
-        if(gamepad2.x){
+        if(gamepad2.x&&!inTransferInProg){
             dpadPressCounter=4;
             inClawHeightAdjusterPos=inHeightNormal;
         }
@@ -171,12 +171,16 @@ public class robotTeleOp extends LinearOpMode {
     public void intakeAndTransferToTransfer(){
         if(gamepad2.right_bumper&&inClawHeightAdjuster.getPosition()==inClawHeightAdjusterPos&&inClawWristPos==inClawWrist.getPosition()) {
             inClawPos = inClawClosed;
+            moveServos();
+            //sleep(100);
             inTransferInProg=true;
             dpadPressCounter=0;
+
         }
         if(inClaw.getPosition()==inClawClosedPixel&&inTransferInProg)
             inClawHeightAdjusterPos=inHeightClawTransferPos;
         if(inClawHeightAdjuster.getPosition()==inClawHeightAdjusterPos&&inTransferInProg) {
+            //sleep(200);
             inClawPos = inClawOpen;
             inTransferInProg=false;
         }
@@ -186,10 +190,27 @@ public class robotTeleOp extends LinearOpMode {
 
     }
     public void placePixel(){
+        if(outClawPos==outClawPixel&&outClawPos==outClaw.getPosition()){
+            //sleep(50);
+            outWristPos=outWristPlace;
+            outDistanceAdjusterPos=outDistancePlace;
+            placingPixel=true;
+        }
+
 
     }
     public void openOutClaw(){
-
+        if(outDistanceAdjusterPos==outDistanceAdjuster.getPosition()&&outWristPos==outWrist.getPosition()&&gamepad2.left_bumper&&placingPixel){
+            outClawPos=outClawOpen;
+            placingPixel=false;
+        }
+    }
+    public void outReturnToTransfer(){
+        if(!placingPixel&&outClaw.getPosition()==outClawOpen){
+            //sleep(100);
+            outWristPos=outWristTransfer;
+            outDistanceAdjusterPos=outDistanceTransfer;
+        }
     }
 
 
@@ -202,6 +223,16 @@ public class robotTeleOp extends LinearOpMode {
         outWrist.setPosition(outWristPos);
         transfer.setPosition(transferPos);
     }
+
+
+
+
+
+
+
+
+
+
 
 
     public void set_config(){
@@ -221,6 +252,7 @@ public class robotTeleOp extends LinearOpMode {
         back_right_dcMotor.setDirection(DcMotor.Direction.FORWARD);
     }
     public void servoConfig(){
+        //assumes 7 servos
         inClaw=hardwareMap.get(Servo.class, "inClaw"); //change this name
         inClawHeightAdjuster=hardwareMap.get(Servo.class, "inClawHeightAdjuster"); //change this name
         inClawWrist=hardwareMap.get(Servo.class, "inClawWrist"); //change this name
