@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -64,7 +63,7 @@ public class robotTeleOp extends LinearOpMode {
     final double outWristTransfer=0.0; // change this value
     final double outWristPlace=0.0; // change this value
 
-    boolean placingPixel=false;
+    boolean outTransferInProg =false;
 
 
     Servo transfer;
@@ -125,6 +124,14 @@ public class robotTeleOp extends LinearOpMode {
 
             intakeAndTransferToTransfer();
 
+            outReturnToTransfer();
+            openOutClaw();
+            placePixel();
+            if(gamepad2.a){
+                transferOut();
+            }
+
+
             moveServos();
 
             // Show the elapsed game time and wheel power.
@@ -138,7 +145,7 @@ public class robotTeleOp extends LinearOpMode {
         if(gamepad2.dpad_down){
             dpadPressCounter++;
         }
-       else if(gamepad2.dpad_up){
+       else if(gamepad2.dpad_right){
             dpadPressCounter--;
        }
 
@@ -186,28 +193,27 @@ public class robotTeleOp extends LinearOpMode {
         }
     }
 
-    public void outTransfer(){
-
+    public void transferOut(){
+        ;
     }
     public void placePixel(){
         if(outClawPos==outClawPixel&&outClawPos==outClaw.getPosition()){
             //sleep(50);
             outWristPos=outWristPlace;
             outDistanceAdjusterPos=outDistancePlace;
-            placingPixel=true;
+            outTransferInProg=true;
         }
 
 
     }
     public void openOutClaw(){
-        if(outDistanceAdjusterPos==outDistanceAdjuster.getPosition()&&outWristPos==outWrist.getPosition()&&gamepad2.left_bumper&&placingPixel){
+        if(outDistanceAdjusterPos==outDistanceAdjuster.getPosition()&&outWristPos==outWrist.getPosition()&&gamepad2.left_bumper&& outTransferInProg){
             outClawPos=outClawOpen;
-            placingPixel=false;
+            outTransferInProg =false;
         }
     }
     public void outReturnToTransfer(){
-        if(!placingPixel&&outClaw.getPosition()==outClawOpen){
-            //sleep(100);
+        if(!outTransferInProg &&outClaw.getPosition()==outClawOpen){
             outWristPos=outWristTransfer;
             outDistanceAdjusterPos=outDistanceTransfer;
         }
