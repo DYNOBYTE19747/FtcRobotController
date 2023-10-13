@@ -260,7 +260,7 @@ public class robotTeleOp extends LinearOpMode {
         back_right_dcMotor.setDirection(DcMotor.Direction.FORWARD);
     }
     public void servoConfig(){
-        //assumes 7 servos
+        //assumes 8 servos
         inClaw=hardwareMap.get(Servo.class, "inClaw"); //change this name
         inClawHeightAdjuster1=hardwareMap.get(Servo.class, "inClawHeightAdjusterRight"); //change this name
         inClawHeightAdjuster2=hardwareMap.get(Servo.class, "inClawHeightAdjusterLeft"); //change this name
