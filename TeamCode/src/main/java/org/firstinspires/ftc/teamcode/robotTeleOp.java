@@ -27,7 +27,8 @@ public class robotTeleOp extends LinearOpMode {
     final double inClawClosed=0.0; // change this value
     final double inClawClosedPixel=0.0; // change this value
 
-    Servo inClawHeightAdjuster;
+    Servo inClawHeightAdjuster1;
+    Servo inClawHeightAdjuster2;
     int dpadPressCounter=0;
     double inClawHeightAdjusterPos=0.0; // change this value to initial value
     final double inHeightNormal=0.0; // change this value (if only 2 pixels are in stack)
@@ -176,7 +177,7 @@ public class robotTeleOp extends LinearOpMode {
         }
     }
     public void intakeAndTransferToTransfer(){
-        if(gamepad2.right_bumper&&inClawHeightAdjuster.getPosition()==inClawHeightAdjusterPos&&inClawWristPos==inClawWrist.getPosition()) {
+        if(gamepad2.right_bumper&&inClawHeightAdjuster1.getPosition()==inClawHeightAdjusterPos&&inClawWristPos==inClawWrist.getPosition()) {
             inClawPos = inClawClosed;
             moveServos();
             //sleep(100);
@@ -186,7 +187,7 @@ public class robotTeleOp extends LinearOpMode {
         }
         if(inClaw.getPosition()==inClawClosedPixel&&inTransferInProg)
             inClawHeightAdjusterPos=inHeightClawTransferPos;
-        if(inClawHeightAdjuster.getPosition()==inClawHeightAdjusterPos&&inTransferInProg) {
+        if(inClawHeightAdjuster1.getPosition()==inClawHeightAdjusterPos&&inTransferInProg) {
             //sleep(200);
             inClawPos = inClawOpen;
             inTransferInProg=false;
@@ -222,7 +223,8 @@ public class robotTeleOp extends LinearOpMode {
 
     public void moveServos(){
         inClaw.setPosition(inClawPos);
-        inClawHeightAdjuster.setPosition(inClawHeightAdjusterPos);
+        inClawHeightAdjuster1.setPosition(inClawHeightAdjusterPos);
+        inClawHeightAdjuster2.setPosition(inClawHeightAdjusterPos);
         inClawWrist.setPosition(inClawWristPos);
         outClaw.setPosition(outClawPos);
         outDistanceAdjuster.setPosition(outDistanceAdjusterPos);
@@ -260,12 +262,15 @@ public class robotTeleOp extends LinearOpMode {
     public void servoConfig(){
         //assumes 7 servos
         inClaw=hardwareMap.get(Servo.class, "inClaw"); //change this name
-        inClawHeightAdjuster=hardwareMap.get(Servo.class, "inClawHeightAdjuster"); //change this name
+        inClawHeightAdjuster1=hardwareMap.get(Servo.class, "inClawHeightAdjusterRight"); //change this name
+        inClawHeightAdjuster2=hardwareMap.get(Servo.class, "inClawHeightAdjusterLeft"); //change this name
         inClawWrist=hardwareMap.get(Servo.class, "inClawWrist"); //change this name
         outClaw=hardwareMap.get(Servo.class, "outClaw"); //change this name
         outDistanceAdjuster=hardwareMap.get(Servo.class, "outDistanceAdjuster"); //change this name
         outWrist=hardwareMap.get(Servo.class, "outWrist"); //change this name
         transfer=hardwareMap.get(Servo.class, "transfer"); //change this name
+
+        inClawHeightAdjuster2.setDirection(Servo.Direction.REVERSE);
     }
 
 
